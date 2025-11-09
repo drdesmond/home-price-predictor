@@ -44,7 +44,7 @@ type FetchResponse = Awaited<ReturnType<typeof fetch>>;
  * If `MODEL_URL` is not provided, predictions fall back to the locally-trained ONNX model
  * stored in `src/models/house_price_model.onnx`. Provide MODEL_URL=http://127.0.0.1:5000 in the .env file to delegate to the Flask API.
  */
-const MODEL_URL = process.env.MODEL_URL; //'http://127.0.0.1:5000';
+const MODEL_URL = 'http://127.0.0.1:5000'; //process.env.MODEL_URL;
 const PREDICTION_REQUEST_TIMEOUT_MS = 10_000;
 const MODEL_PATH_ENV = process.env.MODEL_PATH;
 const DEFAULT_MODEL_CANDIDATES = [

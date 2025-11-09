@@ -22,6 +22,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
-  console.log(`NestJS backend running on http://localhost:${port}`);
+  console.log(`Frontend: http://localhost:5173`);
+  console.log(`Backend: http://localhost:${port}`);
 }
 bootstrap();

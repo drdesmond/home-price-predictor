@@ -1,0 +1,8 @@
+{
+    "name": "property-estimator-monorepo",
+    "private": true,
+    "description": "Workspace-level scripts for the Property Estimator stack.",
+    "scripts": {
+        "start:services": "bash ./start-services.sh"
+    }
+}
