@@ -270,3 +270,4 @@ If `MODEL_URL` is omitted, NestJS falls back to the ONNX file at `backend/src/mo
 -   `ml-engine/README.md` – Machine Learning service documentation and design notes.
 -   `ml-engine/train_model.py` – Training script with inline comments.
 -   `take-home.md` – Original problem statement and sample training data.
+-   `demo.mov` – Screen capture of the end-to-end flow.
