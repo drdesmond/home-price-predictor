@@ -44,7 +44,7 @@ type FetchResponse = Awaited<ReturnType<typeof fetch>>;
  * If `MODEL_URL` is not provided, predictions fall back to the locally-trained ONNX model
  * stored in `src/models/house_price_model.onnx`. Provide MODEL_URL=http://127.0.0.1:5000 in the .env file to delegate to the Flask API.
  */
-const MODEL_URL = 'http://127.0.0.1:5000'; //process.env.MODEL_URL;
+const MODEL_URL = process.env.MODEL_URL ?? '';
 const PREDICTION_REQUEST_TIMEOUT_MS = 10_000;
 const MODEL_PATH_ENV = process.env.MODEL_PATH;
 const DEFAULT_MODEL_CANDIDATES = [
@@ -101,22 +101,47 @@ export class PredictionService {
    */
   async predictAndStore(input: PredictionRequestInput): Promise<Prediction> {
     try {
-      let predictedPrice: number;
+      let predictedPrice: number | null = null;
+
+      let remoteError: unknown = null;
 
       if (MODEL_URL) {
-        this.logger.log(`Using remote prediction service at ${MODEL_URL}.`);
-        const response = await this.sendPredictionRequest(input);
+        try {
+          this.logger.log(`Using remote prediction service at ${MODEL_URL}.`);
+          predictedPrice = await this.predictWithRemote(input);
+        } catch (error: unknown) {
+          if (error instanceof HttpException && error.getStatus() < 500) {
+            throw error;
+          }
 
-        if (!response.ok) {
-          const message = await this.extractErrorMessage(response);
-          throw new HttpException(message, response.status);
+          remoteError = error;
+          this.logger.warn(
+            `Remote prediction failed (${error instanceof Error ? error.message : String(error)}). Falling back to local ONNX model.`,
+          );
         }
+      }
 
-        const predictionData = await this.parsePredictionResponse(response);
-        predictedPrice = predictionData.predicted_price;
-      } else {
+      if (predictedPrice === null) {
         this.logger.log('Using locally stored ONNX model for prediction.');
-        predictedPrice = await this.predictWithOnnx(input);
+        try {
+          predictedPrice = await this.predictWithOnnx(input);
+        } catch (fallbackError: unknown) {
+          if (remoteError) {
+            this.logger.error(
+              'ONNX fallback failed after remote prediction error.',
+              remoteError instanceof Error ? remoteError.stack : undefined,
+            );
+          }
+
+          throw fallbackError;
+        }
+      }
+
+      if (predictedPrice === null) {
+        throw new HttpException(
+          'Prediction could not be completed',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
 
       return this.persistPrediction({
@@ -162,6 +187,20 @@ export class PredictionService {
       predicted_price: createPredictionInput.predicted_price,
     });
     return this.predictionRepository.save(prediction);
+  }
+
+  private async predictWithRemote(
+    input: PredictionRequestInput,
+  ): Promise<number> {
+    const response = await this.sendPredictionRequest(input);
+
+    if (!response.ok) {
+      const message = await this.extractErrorMessage(response);
+      throw new HttpException(message, response.status);
+    }
+
+    const predictionData = await this.parsePredictionResponse(response);
+    return predictionData.predicted_price;
   }
 
   /**

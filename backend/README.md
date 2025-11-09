@@ -1,6 +1,6 @@
 # Backend (NestJS API)
 
-This service sits between the React client and the ML model. It validates requests, fetches price predictions, and persists the results to a local SQLite database for the history page.
+This service sits between the React client and the ML model. It validates requests, fetches price predictions, and persists the results to a local SQLite database for the history page. If the Flask API is unavailable it automatically falls back to the pretrained ONNX model in `backend/src/models`.
 
 ## Core flow
 
@@ -21,5 +21,5 @@ The API listens on `http://127.0.0.1:3001`. Update the `MODEL_URL` constant in `
 ## Troubleshooting
 
 - **`sqlite3` fails to build** – install Xcode Command Line Tools (macOS) and run `npm rebuild sqlite3 --build-from-source`.
-- **`POST /predictions` returns 502/504** – make sure the Flask ML service is reachable at the configured `MODEL_URL`.
-- **Database not updating** – delete `predictions.db` and restart; TypeORM will recreate the schema on boot.***
+- **`POST /predictions` returns 502/504** – make sure the Flask ML service is reachable at the configured `MODEL_URL`. When it isn’t, the controller switches to the bundled ONNX model so requests still succeed.\*\*\* End Patch
+- **Database not updating** – delete `predictions.db` and restart; TypeORM will recreate the schema on boot.\*\*\*

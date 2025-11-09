@@ -1,6 +1,6 @@
 # React Client
 
-Frontend for the Property Estimator experience. It renders the home/start/history flows, validates user input, and talks to the NestJS API.
+Frontend for the Property Estimator experience. It renders the home/start/history flows, validates user input, and talks to the NestJS API. If the Flask model is down, the API still answers using the bundled ONNX model in `backend/src/models`.
 
 ## Core pieces
 

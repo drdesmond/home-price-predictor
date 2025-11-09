@@ -24,7 +24,7 @@ export default function History({ predictionsList, historyLoading, historyError,
                     <td className="px-6 py-4 text-slate-600">{new Date(prediction.created_at).toLocaleString()}</td>
                     <td className="px-6 py-4 text-slate-800">{prediction.square_footage} ft²</td>
                     <td className="px-6 py-4 text-slate-800">{prediction.bedrooms}</td>
-                    <td className="px-6 py-4 text-indigo-600 font-semibold">${Number(prediction.predicted_price).toLocaleString()}</td>
+                    <td className="px-6 py-4 text-indigo-600 font-semibold">${Number(prediction.predicted_price)?.toFixed(2)?.toLocaleString()}</td>
                 </tr>
             )),
         [predictionsList],

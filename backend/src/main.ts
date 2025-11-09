@@ -25,4 +25,4 @@ async function bootstrap() {
   console.log(`Frontend: http://localhost:5173`);
   console.log(`Backend: http://localhost:${port}`);
 }
-bootstrap();
+void bootstrap();

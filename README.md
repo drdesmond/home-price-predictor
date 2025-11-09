@@ -1,6 +1,7 @@
 # 🏡 Property Estimator
 
 End-to-end demo that estimates property prices using a React client, a NestJS API, and an optional Flask-based ML model.
+If flask API fails, the app uses pretrained model in `backend/src/models` for prediction.
 
 [![System architecture overview](./architecture.png)](./architecture.png)
 
@@ -16,7 +17,7 @@ End-to-end demo that estimates property prices using a React client, a NestJS AP
 
 ```bash
 git clone https://github.com/drdesmond/home-price-predictor.git
-cd GEVITY
+cd home-price-predictor
 npm run start:services
 ```
 
@@ -54,7 +55,7 @@ Clone the project:
 
 ```bash
 git clone https://github.com/drdesmond/home-price-predictor.git
-cd GEVITY
+cd home-price-predictor
 ```
 
 ---
@@ -199,7 +200,7 @@ Visit the client URL, submit a property estimate, then view prediction history. 
 
 ## 8. Automated Services launcher
 
-To run all three services at once, rrom the repo root run:
+To run all three services at once, at the repo root run:
 
 ```bash
 npm run start:services
