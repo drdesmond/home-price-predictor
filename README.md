@@ -1,19 +1,18 @@
 # 🏡 Property Estimator
 
-End-to-end demo that estimates property prices using a React client, a NestJS API, and Flask-based ML model.
-If flask API fails, the app uses pretrained model in `backend/src/models` for prediction.
+End-to-end application that estimates property prices via three microservices: a React client, a NestJS API, and a Flask-based ML model.
 
 ## 🖥️ Watch the demo
 
 Watch Demo on [Youtube](https://youtu.be/10L8m4ujDA0)
-[![Watch the demo](./screenshot.png)](https://youtu.be/CQhJX4UkAN0)
+[![Watch the demo](./demo.png)](https://youtu.be/CQhJX4UkAN0)
 
 ---
 
-## What’s in the box?
+## Services
 
 -   **client/** – React 19 + Vite UI (port 5173). Core screens live in `src/pages/`, reusable pieces in `src/components/`.
--   **backend/** – NestJS API (port 3001) that stores predictions in SQLite and optionally forwards to the ML model.
+-   **backend/** – NestJS API (port 3001) exposing `POST /predictions` for new estimates, `GET /predictions` for history, storing results in SQLite, and proxying to the ML model when available.
 -   **ml-engine/** – Flask app (port 5000) exposing `/predict` and a training script that regenerates the ONNX/Pickle artifacts.
 
 ## Quickstart (TL;DR)
@@ -63,23 +62,39 @@ cd home-price-predictor
 
 ---
 
-## 3. Configure Environment Variables
+---
 
-Only the NestJS backend needs runtime configuration. Create `backend/.env`:
+## 3. Running each Service Manually
 
-```bash
-# When defined, NestJS forwards prediction requests to the Flask service.
-# Leave undefined to use the bundled local ONNX model.
-MODEL_URL=http://127.0.0.1:5000
-```
+Start the services in this order:
+See specific instruction in section 5 - 8
 
-If `MODEL_URL` is omitted, NestJS falls back to the ONNX file at `backend/src/models/house_price_model.onnx`.
+1. **Flask ML Engine** (`python app.py`) — Required if `MODEL_URL (MODEL_URL=http://127.0.0.1:5000 )` is set; optional when using the bundled ONNX model.
+2. **NestJS Backend** (`npm run start:dev`) — Proxies prediction requests, persists results to SQLite, and exposes REST endpoints.
+3. **React Client** (`npm run dev`) — Provides the UI at `http://127.0.0.1:5173`.
+
+Visit the client URL, submit a property estimate, then view prediction history. Console logs from each service provide helpful debugging context.
 
 ---
 
-## 4. ML Engine (Flask) Setup
+## 4. Launch the 3 Services Automatically
 
-> The NestJS backend automatically falls back to the pretrained ONNX model in `backend/src/models` whenever this service is offline. Start Flask server and set env (MODEL_URL=http://127.0.0.1:5000) if you want live predictions; otherwise you can continue with just the client and backend.
+To run all three services at once, at the repo root run:
+
+```bash
+npm run start:services
+```
+
+The script installs missing Node dependencies, bootstraps a Python virtualenv for the ML engine when possible, frees ports (5173, 3001, 5000), and starts Flask, NestJS, and Vite. Press `Ctrl+C` to shut them all down gracefully.
+If the script succeeds, the entire stack is live at `http://localhost:5173`, and you can skip the manual steps below.
+
+If the script fails, start each service manually following the order in section 3.
+
+---
+
+## 5. ML Engine (Flask) Setup
+
+> The NestJS backend automatically falls back to the pretrained ONNX model in `backend/src/models` whenever this service is offline. Start Flask server and set `MODEL_URL=http://127.0.0.1:5000` in `.env` in `backend` folder if you want live predictions; otherwise you can continue with just the client and backend with pretrained model.
 
 1.  **Create and activate a virtual environment**
 
@@ -119,7 +134,7 @@ python train_model.py
 
 ---
 
-## 5. NestJS Backend Setup
+## 6. NestJS Backend Setup
 
 1. **Install dependencies**
 
@@ -153,7 +168,7 @@ python train_model.py
 
 ---
 
-## 6. React Client Setup
+## 7. React Client Setup
 
 1. **Install dependencies**
 
@@ -186,27 +201,17 @@ The client reads API URLs from `client/src/lib/api.ts`. Update this file if you 
 
 ---
 
-## 7. Running the Full Stack Manually
+## 8. Configure Environment Variables
 
-Start the services in this order:
-
-1. **Flask ML Engine** (`python app.py`) — Required if `MODEL_URL (MODEL_URL=http://127.0.0.1:5000 )` is set; optional when using the bundled ONNX model.
-2. **NestJS Backend** (`npm run start:dev`) — Proxies prediction requests, persists results to SQLite, and exposes REST endpoints.
-3. **React Client** (`npm run dev`) — Provides the UI at `http://127.0.0.1:5173`.
-
-Visit the client URL, submit a property estimate, then view prediction history. Console logs from each service provide helpful debugging context.
-
----
-
-## 8. Automated Services launcher
-
-To run all three services at once, at the repo root run:
+Only the NestJS backend needs runtime configuration. Create `backend/.env`:
 
 ```bash
-npm run start:services
+# When defined, NestJS forwards prediction requests to the Flask ML service.
+# Leave undefined to use the bundled local ONNX model.
+MODEL_URL=http://127.0.0.1:5000
 ```
 
-The script installs missing Node dependencies, bootstraps a Python virtualenv for the ML engine when possible, frees ports (5173, 3001, 5000), and starts Flask, NestJS, and Vite. Press `Ctrl+C` to shut them all down gracefully.
+If `MODEL_URL` is omitted, NestJS falls back to the ONNX file at `backend/src/models/house_price_model.onnx`.
 
 ---
 
@@ -217,13 +222,6 @@ The script installs missing Node dependencies, bootstraps a Python virtualenv fo
 | ML Engine | `pytest`       | Located in `ml-engine/tests/`. |
 | NestJS    | `npm run test` | Runs Jest unit tests.          |
 | React     | `npm run test` | Runs Jest unit tests.          |
-
-The React client also ships with component/page tests. Run them with:
-
-```bash
-cd client
-npm test -- --run
-```
 
 ---
 
@@ -257,15 +255,15 @@ npm test -- --run
 
 ---
 
-## 10. Architecture Design
+## 11. Architecture Design
 
 <div align="center">
-  <img src="./architecture.png" alt="System architecture overview" width="320" />
+  <img src="./architecture-diagram.png" alt="System architecture overview" width="320" />
 </div>
 
 ---
 
-## 11. Useful References
+## 12. Useful References
 
 -   `client/README.md` – React/Vite frontend documentation and design notes.
 -   `backend/README.md` – NestJS module documentation and design notes.
