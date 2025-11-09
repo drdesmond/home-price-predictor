@@ -1,15 +1,18 @@
 # 🏡 Property Estimator
 
-End-to-end demo that estimates property prices using a React client, a NestJS API, and an optional Flask-based ML model.
+End-to-end demo that estimates property prices using a React client, a NestJS API, and Flask-based ML model.
 If flask API fails, the app uses pretrained model in `backend/src/models` for prediction.
 
-[![System architecture overview](./architecture.png)](./architecture.png)
+## 🖥️ Watch the demo
+
+Watch Demo on [Youtube](https://youtu.be/10L8m4ujDA0)
+[![Watch the demo](./screenshot.png)](https://youtu.be/CQhJX4UkAN0)
 
 ---
 
 ## What’s in the box?
 
--   **client/** – React 19 + Vite UI. Core screens live in `src/pages/`, reusable pieces in `src/components/`.
+-   **client/** – React 19 + Vite UI (port 5173). Core screens live in `src/pages/`, reusable pieces in `src/components/`.
 -   **backend/** – NestJS API (port 3001) that stores predictions in SQLite and optionally forwards to the ML model.
 -   **ml-engine/** – Flask app (port 5000) exposing `/predict` and a training script that regenerates the ONNX/Pickle artifacts.
 
@@ -254,14 +257,18 @@ npm test -- --run
 
 ---
 
-## 10. Useful References
+## 10. Architecture Design
+
+<div align="center">
+  <img src="./architecture.png" alt="System architecture overview" width="320" />
+</div>
+
+---
+
+## 11. Useful References
 
 -   `client/README.md` – React/Vite frontend documentation and design notes.
 -   `backend/README.md` – NestJS module documentation and design notes.
 -   `ml-engine/README.md` – Machine Learning service documentation and design notes.
 -   `ml-engine/train_model.py` – Training script with inline comments.
 -   `take-home.md` – Original problem statement and sample training data.
-
----
-
-🎉 You now have everything needed to evaluate the Property Estimator application locally. Reach out to the project maintainer if you encounter issues not covered here. Happy reviewing!

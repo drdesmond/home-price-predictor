@@ -2,6 +2,8 @@
 
 This service sits between the React client and the ML model. It validates requests, fetches price predictions, and persists the results to a local SQLite database for the history page. If the Flask API is unavailable it automatically falls back to the pretrained ONNX model in `backend/src/models`.
 
+- **backend/** – NestJS API (port 3001)
+
 ## Core flow
 
 - `PredictionController` exposes `POST /predictions` and `GET /predictions`.

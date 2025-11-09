@@ -2,6 +2,8 @@
 
 Frontend for the Property Estimator experience. It renders the home/start/history flows, validates user input, and talks to the NestJS API. If the Flask model is down, the API still answers using the bundled ONNX model in `backend/src/models`.
 
+**client/** – React 19 + Vite UI (port 5173)
+
 ## Core pieces
 
 -   `src/pages/` wraps the UI into route-level components (`home`, `estimate`, `history`, `notfound`).

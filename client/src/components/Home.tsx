@@ -7,7 +7,7 @@ export default function Home({ onStart, onHistory }: HomeProps) {
     return (
         <div className="text-center animate-fadeIn">
             <h1 className="text-5xl font-extrabold bg-gradient-to-r from-indigo-700 to-sky-600 bg-clip-text text-transparent mb-4">Property Estimator</h1>
-            <p className="text-slate-600 text-lg mb-8">Instantly estimate property price using square footage and bedrooms.</p>
+            <p className="text-slate-600 text-lg mb-8"> Estimate property price using square footage and bedrooms.</p>
 
             <div className="flex flex-col sm:flex-row gap-5 justify-center">
                 <button
