@@ -1,6 +1,28 @@
-# 🏡 Property Estimator – Local Setup Guide
+# 🏡 Property Estimator
 
-This guide walks through everything a reviewer needs to run the React client, NestJS API, and Flask ML engine locally. It covers prerequisites, environment configuration, installation steps, and helpful troubleshooting tips.
+End-to-end demo that estimates property prices using a React client, a NestJS API, and an optional Flask-based ML model.
+
+[![System architecture overview](./architecture.png)](./architecture.png)
+
+---
+
+## What’s in the box?
+
+-   **client/** – React 19 + Vite UI. Core screens live in `src/pages/`, reusable pieces in `src/components/`.
+-   **backend/** – NestJS API (port 3001) that stores predictions in SQLite and optionally forwards to the ML model.
+-   **ml-engine/** – Flask app (port 5000) exposing `/predict` and a training script that regenerates the ONNX/Pickle artifacts.
+
+## Quickstart (TL;DR)
+
+```bash
+git clone https://github.com/drdesmond/home-price-predictor.git
+cd GEVITY
+npm run start:services
+```
+
+Open http://localhost:5173/ and you’re ready to explore. The helper script installs Node and Python dependencies, boots all services, and tears them down when you press `Ctrl+C`.
+
+Prefer a manual setup? Read on.
 
 ---
 
@@ -19,27 +41,27 @@ This guide walks through everything a reviewer needs to run the React client, Ne
 
 ---
 
-## 2. Clone the Repository
+## 2. Repository Layout
 
-```bash
-git clone https://github.com/<your-org>/<your-repo>.git
-cd GEVITY
-```
-
-The repo contains three active services:
-
-```
-GEVITY/
+```text
+home-price-predictor/
 ├── backend/      # NestJS API (port 3001)
 ├── client/       # React UI (port 5173)
 └── ml-engine/    # Flask ML service + training utilities (port 5000)
+```
+
+Clone the project:
+
+```bash
+git clone https://github.com/drdesmond/home-price-predictor.git
+cd GEVITY
 ```
 
 ---
 
 ## 3. Configure Environment Variables
 
-Only the NestJS backend requires configuration. Create `backend/.env`:
+Only the NestJS backend needs runtime configuration. Create `backend/.env`:
 
 ```bash
 PORT=3001
@@ -129,6 +151,7 @@ If `MODEL_URL` is omitted, NestJS falls back to the ONNX file at `backend/src/mo
     - `GET /predictions?limit=100` — returns persisted prediction history.
 
 3. **Run backend tests (optional)**
+
     ```bash
     npm run test
     ```
@@ -153,6 +176,7 @@ If `MODEL_URL` is omitted, NestJS falls back to the ONNX file at `backend/src/mo
     Vite serves the UI at `http://127.0.0.1:5173`.
 
 3. **Lint (optional)**
+
     ```bash
     npm run lint
     ```
@@ -161,83 +185,72 @@ The client reads API URLs from `client/src/lib/api.ts`. Update this file if you 
 
 ---
 
-## 7. Running the Full Stack
+## 7. Running the Full Stack Manually
 
 Start the services in this order:
 
-1. **Flask ML Engine** (`python app.py`)  
-   Required if `MODEL_URL` is set; optional when using the bundled ONNX model.
-2. **NestJS Backend** (`npm run start:dev`)  
-   Proxies prediction requests, persists results to SQLite, and exposes REST endpoints.
-3. **React Client** (`npm run dev`)  
-   Provides the UI at `http://127.0.0.1:5173`.
+1. **Flask ML Engine** (`python app.py`) — Required if `MODEL_URL` is set; optional when using the bundled ONNX model.
+2. **NestJS Backend** (`npm run start:dev`) — Proxies prediction requests, persists results to SQLite, and exposes REST endpoints.
+3. **React Client** (`npm run dev`) — Provides the UI at `http://127.0.0.1:5173`.
 
 Visit the client URL, submit a property estimate, then view prediction history. Console logs from each service provide helpful debugging context.
 
 ---
 
-### 7.1 Unified launcher script
+## 8. Automated Services launcher
 
-A helper script at the repo root can start every service for you:
-
-```bash
-chmod +x start-services.sh
-./start-services.sh
-```
-
-Or use the npm wrapper (no need to mark the script executable first):
+To run all three services at once, rrom the repo root run:
 
 ```bash
 npm run start:services
 ```
 
-The visit: http://localhost:5173/
-
-The script:
-
--   Installs missing Node dependencies automatically.
--   Creates `ml-engine/.venv` if needed, installs Python requirements, and launches the Flask ML engine (falls back to system `python3` when necessary).
--   Starts the NestJS backend (`npm run start:dev`).
--   Starts the React client (`npm run dev`).
--   Shuts everything down when you press `Ctrl+C`.
-
-If `python3` isn’t on your `PATH`, the script skips the ML engine and continues with the Node services.
+The script installs missing Node dependencies, bootstraps a Python virtualenv for the ML engine when possible, frees ports (5173, 3001, 5000), and starts Flask, NestJS, and Vite. Press `Ctrl+C` to shut them all down gracefully.
 
 ---
 
-## 8. Testing Summary
+## 9. Testing Summary
 
-| Layer     | Command        | Notes                                              |
-| --------- | -------------- | -------------------------------------------------- |
-| ML Engine | `pytest`       | Located in `ml-engine/tests/`.                     |
-| NestJS    | `npm run test` | Runs Jest unit tests.                              |
-| React     | `npm run lint` | ESLint handles both linting and type-aware checks. |
+| Layer     | Command        | Notes                          |
+| --------- | -------------- | ------------------------------ |
+| ML Engine | `pytest`       | Located in `ml-engine/tests/`. |
+| NestJS    | `npm run test` | Runs Jest unit tests.          |
+| React     | `npm run test` | Runs Jest unit tests.          |
+
+The React client also ships with component/page tests. Run them with:
+
+```bash
+cd client
+npm test -- --run
+```
 
 ---
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
-**`sqlite3` build failures:**
+**`sqlite3` build failures**
 
 -   Ensure Xcode Command Line Tools (macOS) or Build Tools for Visual Studio (Windows) are installed.
 -   Re-run `npm rebuild sqlite3 --build-from-source`.
 
-**`onnxruntime-node` installation issues:**
+**`onnxruntime-node` installation issues**
 
 -   Delete `node_modules` and reinstall with `npm install --build-from-source onnxruntime-node`.
 -   Apple silicon users may need Rosetta or to set `npm_config_arch=arm64`.
 
-**Flask cannot find the model file:**
+**Flask cannot find the model file**
 
 -   Run `python train_model.py` to regenerate artifacts.
 -   Confirm `ml-engine/models/house_price_model.pkl` exists and restart the Flask app.
 
-**NestJS falls back to local model unexpectedly:**
+**Flask cannot find the model file**
+
+**NestJS falls back to local model unexpectedly**
 
 -   Check that `MODEL_URL` is defined in `backend/.env` and the Flask service is reachable.
 -   Set `MODEL_PATH` if you store the ONNX file outside `backend/src/models`.
 
-**React form validation rejects numbers typed slowly:**
+**React form validation rejects numbers typed slowly**
 
 -   Inputs accept only positive integers; ensure you enter whole numbers for both fields.
 
@@ -245,8 +258,9 @@ If `python3` isn’t on your `PATH`, the script skips the ML engine and continue
 
 ## 10. Useful References
 
--   `SETUP_COMPLETE.md` – High-level summary of a working environment.
+-   `client/README.md` – React/Vite frontend documentation and design notes.
 -   `backend/README.md` – NestJS module documentation and design notes.
+-   `ml-engine/README.md` – Machine Learning service documentation and design notes.
 -   `ml-engine/train_model.py` – Training script with inline comments.
 -   `take-home.md` – Original problem statement and sample training data.
 

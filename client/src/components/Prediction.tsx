@@ -76,7 +76,7 @@ function Prediction({ loading, result, error, onBack, onSubmit, initialValues }:
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6" noValidate>
                 <fieldset disabled={isBusy} className="contents">
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2" htmlFor="sqft-input">
+                        <label className="block text-sm font-medium text-slate-700 mb-2" htmlFor="sqft">
                             Square Footage (ft²)
                         </label>
                         <input
@@ -99,7 +99,7 @@ function Prediction({ loading, result, error, onBack, onSubmit, initialValues }:
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2" htmlFor="beds-input">
+                        <label className="block text-sm font-medium text-slate-700 mb-2" htmlFor="bedrooms">
                             Number of Bedrooms
                         </label>
                         <input

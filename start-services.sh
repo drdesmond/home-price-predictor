@@ -8,6 +8,7 @@ CLIENT_DIR="$ROOT/client"
 ML_DIR="$ROOT/ml-engine"
 VENV_DIR=""
 PYTHON_CMD="python3"
+PORTS_TO_FREE=("5173" "3001" "5000")
 
 PIDS=()
 
@@ -67,6 +68,33 @@ ensure_dependency() {
 
 echo "Property Estimator – multi-service launcher"
 echo "Root directory: ${ROOT}"
+echo
+
+free_port_if_needed() {
+  local port="$1"
+  local pids
+  pids="$(lsof -ti tcp:"${port}" -sTCP:LISTEN 2>/dev/null || true)"
+  if [ -n "${pids}" ]; then
+    echo "⚠️  Port ${port} in use. Attempting to free it..."
+    for pid in ${pids}; do
+      if kill -0 "${pid}" >/dev/null 2>&1; then
+        echo "   Sending SIGTERM to pid ${pid} (port ${port})"
+        kill "${pid}" >/dev/null 2>&1 || true
+        sleep 1
+        if kill -0 "${pid}" >/dev/null 2>&1; then
+          echo "   Force killing pid ${pid}"
+          kill -9 "${pid}" >/dev/null 2>&1 || true
+        fi
+      fi
+    done
+    echo "   Port ${port} cleared."
+  fi
+}
+
+echo "Checking for occupied service ports..."
+for port in "${PORTS_TO_FREE[@]}"; do
+  free_port_if_needed "${port}"
+done
 echo
 
 if [ -f "${ML_DIR}/app.py" ]; then
@@ -135,8 +163,19 @@ echo "All requested services started. Press Ctrl+C to stop."
 echo "Frontend available at: http://localhost:5173/"
 echo
 
-wait -n || true
-echo
-echo "A service exited. Waiting for remaining processes..."
-wait || true
+monitor_processes() {
+  while true; do
+    for pid in "${PIDS[@]}"; do
+      if ! kill -0 "${pid}" >/dev/null 2>&1; then
+        echo
+        echo "A service exited. Waiting for remaining processes..."
+        wait || true
+        return
+      fi
+    done
+    sleep 1
+  done
+}
+
+monitor_processes
 

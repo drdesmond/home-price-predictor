@@ -84,13 +84,16 @@ def predict_price():
         except Exception:
             feature_names = getattr(model, "feature_names_in_", None)
 
+        default_columns = ["Square Footage", "Number of Bedrooms"]
         if feature_names:
-            new_data = pd.DataFrame([[square_footage, bedrooms]], columns=feature_names)
+            # Guard against empty or None feature names returned by converters.
+            cleaned_names = [name for name in feature_names if name]
+            if len(cleaned_names) == len(default_columns):
+                new_data = pd.DataFrame([[square_footage, bedrooms]], columns=cleaned_names)
+            else:
+                new_data = pd.DataFrame([[square_footage, bedrooms]], columns=default_columns)
         else:
-            new_data = pd.DataFrame(
-                [[square_footage, bedrooms]],
-                columns=["Square Footage", "Number of Bedrooms"]
-            )
+            new_data = pd.DataFrame([[square_footage, bedrooms]], columns=default_columns)
 
         try:
             predicted_price = model.predict(new_data)[0]

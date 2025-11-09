@@ -1,5 +1,5 @@
 {
-    "name": "property-estimator-monorepo",
+    "name": "property-estimator-services",
     "private": true,
     "description": "Workspace-level scripts for the Property Estimator stack.",
     "scripts": {
