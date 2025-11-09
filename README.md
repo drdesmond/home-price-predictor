@@ -65,13 +65,9 @@ cd home-price-predictor
 Only the NestJS backend needs runtime configuration. Create `backend/.env`:
 
 ```bash
-PORT=3001
 # When defined, NestJS forwards prediction requests to the Flask service.
 # Leave undefined to use the bundled local ONNX model.
 MODEL_URL=http://127.0.0.1:5000
-
-# Optional: override the location of the local ONNX model.
-# MODEL_PATH=/absolute/path/to/house_price_model.onnx
 ```
 
 If `MODEL_URL` is omitted, NestJS falls back to the ONNX file at `backend/src/models/house_price_model.onnx`.
@@ -80,7 +76,9 @@ If `MODEL_URL` is omitted, NestJS falls back to the ONNX file at `backend/src/mo
 
 ## 4. ML Engine (Flask) Setup
 
-1. **Create and activate a virtual environment**
+> The NestJS backend automatically falls back to the pretrained ONNX model in `backend/src/models` whenever this service is offline. Start Flask server and set env (MODEL_URL=http://127.0.0.1:5000) if you want live predictions; otherwise you can continue with just the client and backend.
+
+1.  **Create and activate a virtual environment**
 
     ```bash
     cd ml-engine
@@ -89,33 +87,26 @@ If `MODEL_URL` is omitted, NestJS falls back to the ONNX file at `backend/src/mo
     # .venv\Scripts\activate.ps1     # PowerShell on Windows
     ```
 
-2. **Install dependencies**
+2.  **Install dependencies**
 
     ```bash
     pip install --upgrade pip
     pip install -r requirements.txt
     ```
 
-3. **(Optional) Train the model**
+3.  **(Optional) Train the model**  
+     `bash
+python train_model.py
+`
+    Training exports both `house_price_model.pkl` and `house_price_model.onnx` to: - `ml-engine/models/` - `backend/src/models/`
 
-    ```bash
-    python train_model.py
-    # or supply custom data
-    python train_model.py --data /path/to/data.csv
-    ```
-
-    Training exports both `house_price_model.pkl` and `house_price_model.onnx` to:
-
-    - `ml-engine/models/`
-    - `backend/src/models/`
-
-4. **Run unit tests**
+4.  **Run unit tests**
 
     ```bash
     pytest
     ```
 
-5. **Start the Flask API**
+5.  **Start the Flask API**
 
     ```bash
     python app.py
@@ -182,6 +173,12 @@ If `MODEL_URL` is omitted, NestJS falls back to the ONNX file at `backend/src/mo
     npm run lint
     ```
 
+4. **Test (optional)**
+
+    ```bash
+    npm run test
+    ```
+
 The client reads API URLs from `client/src/lib/api.ts`. Update this file if you change the NestJS port.
 
 ---
@@ -190,7 +187,7 @@ The client reads API URLs from `client/src/lib/api.ts`. Update this file if you 
 
 Start the services in this order:
 
-1. **Flask ML Engine** (`python app.py`) — Required if `MODEL_URL` is set; optional when using the bundled ONNX model.
+1. **Flask ML Engine** (`python app.py`) — Required if `MODEL_URL (MODEL_URL=http://127.0.0.1:5000 )` is set; optional when using the bundled ONNX model.
 2. **NestJS Backend** (`npm run start:dev`) — Proxies prediction requests, persists results to SQLite, and exposes REST endpoints.
 3. **React Client** (`npm run dev`) — Provides the UI at `http://127.0.0.1:5173`.
 

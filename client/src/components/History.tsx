@@ -33,11 +33,11 @@ export default function History({ predictionsList, historyLoading, historyError,
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-indigo-50 via-sky-50 to-white flex flex-col animate-fadeIn">
             <header className="flex justify-between items-center px-8 py-6 border-b bg-white/80 backdrop-blur-sm shadow">
-                <button onClick={onBack} className="text-slate-600 hover:text-slate-900 text-sm font-medium">
+                <button onClick={onBack} className="text-slate-600 hover:text-slate-900 text-sm font-medium cursor-pointer">
                     ← Back
                 </button>
                 <h1 className="text-2xl font-semibold text-slate-800">Prediction History</h1>
-                <button onClick={fetchHistory} className="text-sm text-indigo-600 hover:text-indigo-800 font-medium" type="button">
+                <button onClick={fetchHistory} className="text-sm text-indigo-600 hover:text-indigo-800 font-medium cursor-pointer" type="button">
                     Refresh
                 </button>
             </header>

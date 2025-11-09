@@ -1,6 +1,6 @@
 # ML Engine (Flask)
 
-Lightweight Flask service that turns a trained model into a `/predict` endpoint for the Property Estimator stack. When this API is offline, the backend automatically switches to the pretrained ONNX model in `backend/src/models`.
+Lightweight Flask service that turns a trained model into a `/predict` endpoint for the Property Estimator stack. When this API is offline, the backend automatically switches to the pretrained ONNX model in `backend/src/models`. Start Flask server and set env (MODEL_URL=http://127.0.0.1:5000) if you want live predictions; otherwise you can continue with just the client and backend.
 
 ## Core flow
 

@@ -12,13 +12,13 @@ export default function Home({ onStart, onHistory }: HomeProps) {
             <div className="flex flex-col sm:flex-row gap-5 justify-center">
                 <button
                     onClick={onStart}
-                    className="px-8 py-4 text-lg rounded-xl bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-lg hover:scale-[1.03] transition"
+                    className="px-8 py-4 text-lg rounded-xl bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-lg hover:scale-[1.03] transition cursor-pointer"
                 >
                     Start Estimating
                 </button>
                 <button
                     onClick={onHistory}
-                    className="px-6 py-3 text-lg rounded-xl bg-white border border-slate-200 text-slate-800 font-semibold shadow hover:bg-slate-50 transition"
+                    className="px-6 py-3 text-lg rounded-xl bg-white border border-slate-200 text-slate-800 font-semibold shadow hover:bg-slate-50 transition cursor-pointer"
                 >
                     View Previous Predictions
                 </button>
