@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Prediction, { type PredictionFormValues } from '../../components/Prediction';
 import type { PredictionResponse } from '../../types/predictions';
-import { API_BASE_URL, JSON_HEADERS } from '../../lib/api';
+import { API_BASE_URL, JSON_HEADERS } from '../../constants/api';
 
 const predictUrl = `${API_BASE_URL}/predictions`;
 

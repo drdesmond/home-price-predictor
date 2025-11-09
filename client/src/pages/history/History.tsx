@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HistoryView, { type HistoryPrediction } from '../../components/History';
-import { API_BASE_URL, HISTORY_FETCH_LIMIT } from '../../lib/api';
+import { API_BASE_URL, HISTORY_FETCH_LIMIT } from '../../constants/api';
 
 const historyUrl = `${API_BASE_URL}/predictions?limit=${HISTORY_FETCH_LIMIT}`;
 
