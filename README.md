@@ -4,8 +4,8 @@ End-to-end application that estimates property prices via three microservices: a
 
 ## 🖥️ Watch the demo
 
-Watch Demo on [Youtube](https://youtu.be/10L8m4ujDA0)
-[![Watch the demo](./demo.png)](https://youtu.be/CQhJX4UkAN0)
+Watch Demo on [Youtube](https://youtu.be/z-A1oybjH0I)
+[![Watch the demo](./demo.png)](https://youtu.be/z-A1oybjH0I)
 
 ---
 
